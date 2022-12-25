@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-//!!!!!!!!!!!! RENK KODLARI AMA WÝNDOWSTA ÇALIÞMIYOR :):)!!!!!!!!!!!!!!!!!!
+//!!!!!!!!!!!! RENK KODLARI AMA WINDOWSTA CALISMIYOR :):)!!!!!!!!!!!!!!!!!!
 //public static final String ANSI_RESET = "\u001B[0m";
 //public static final String ANSI_BLACK = "\u001B[30m";
 //public static final String ANSI_RED = "\u001B[31m";
@@ -26,7 +26,7 @@ public class Gorevlendirici {
 	List<Process> prosesOncelik2;
 	List<Process> prosesOncelik3;
 
-	// Sýnýfta kullanýlacak fonksiyonlarýn gerçeklenmesi kurucu fonksiyonda
+	// Sinifta kullanilacak fonksiyonlarin gerçeklenmesi kurucu fonksiyonda
 	// yapýlýyor.
 	public Gorevlendirici(String dosya) throws FileNotFoundException {
 		// TODO ornek.txt "dosya" parametresiyle deðiþtirilecek.
