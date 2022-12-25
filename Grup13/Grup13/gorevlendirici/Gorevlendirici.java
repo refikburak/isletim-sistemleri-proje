@@ -17,9 +17,25 @@ import java.util.Scanner;
 //public static final String ANSI_CYAN = "\u001B[36m";
 //public static final String ANSI_WHITE = "\u001B[37m";
 
+//SIRALAMA ALGORITMALARINI YAZARKEN VARIS ZAMANI VEYA ONCELIK KONTROL ETMENIZE GEREK YOK. 
+//BU KUYRUKLARA PROSESLER DUZENLI OLARAK EKLENIYOR. HEP 0. INDEXTEKILERI CALISTIRICAZ. GEREKLI ISLEMLERI YAPTIRICAZ
+//HERHANGI BIR SEKILDE VARIS ZAMANI VEYA ONCELIK KONTROLUNE GEREK YOK.
+//List<Process> gercekZamanli; VARIS ZAMANI DOLMUS VE ONCELIGI 0 OLAN PROSESLER BURDA, EGER VARIS ZAMANI DOLMAMISSA EKLENMIYOR. VARIS ZAMANI DOLANLAR SONRADAN EKLENIYOR
+//List<Process> prosesOncelik1; AYNI SEKILDE VARIS ZAMANI DOLANLAR SONRADAN EKLENIYOR. ONCELIK 1 OLANLAR BURDA
+//List<Process> prosesOncelik2; ONCELIK 2 LER BURDA
+//List<Process> prosesOncelik3; ONCELIK 3 LER BURDA
+//GENEL CALISIR HALDE YAZILACAK. ICERIDE PROSESLER VARMIS VE HER KOSULDA CALISACAKMIS GIBI YAZILACAK.
+// PROGRAM SAYACI KONTROLUNU MAIN DOSYASINDA YAPALIM DIYORUM. SAYACI ORDAN ARTTIRIP SANIYE ILERLETMIS GIBI ORADAN HALLEDERIZ.
+//ALGORITMALAR ICINE BEKLEME EKLEMEYE GEREK OLDUGUNU DUSUNMUYORUM. BEKLEMEYI PROSESLERIN ICINE EKLERIZ.
+
 public class Gorevlendirici {
+	// Dosya okuma icin scanner sinifi
 	Scanner scanner;
+
+	// Program ilerlemesini tutmak ve yonetmek icin program sayaci
 	int programSayaci;
+
+	// Proseslerin tutulup yönetileceði kuyruklar
 	List<Process> okunanProsesler;
 	List<Process> gercekZamanli;
 	List<Process> prosesOncelik1;
@@ -32,18 +48,18 @@ public class Gorevlendirici {
 		// TODO ornek.txt "dosya" parametresiyle degistirilecek.
 		scanner = new Scanner(new File("ornek.txt"));
 
+		// Program sayaci icin deger atamasi yapiliyor.
+		programSayaci = 0;
+
 		// Proses kuyruklari icin bos listeler tanimlaniyor.
 		okunanProsesler = new ArrayList<Process>();
 		gercekZamanli = new ArrayList<Process>();
 		prosesOncelik1 = new ArrayList<Process>();
 		prosesOncelik2 = new ArrayList<Process>();
 		prosesOncelik3 = new ArrayList<Process>();
-
-		// Program sayaci icin deger atamasi yapiliyor.
-		programSayaci = 0;
 	}
 
-	// Dosyadan okuma yapan fonksiyon.
+	// Dosyadan okuma yapan ve gecici listeye atan fonksiyon
 	public void Oku() {
 
 		// Proses ID atanmasi icin degisken tutuluyor.
@@ -53,13 +69,13 @@ public class Gorevlendirici {
 			// Satir, gerekli parcalara ayriliyor.
 			String[] tokens = scanner.nextLine().split(", ");
 
+			// Proses ID, istenen formata donusturuluyor.
+			String pid = String.format("%03d", pidSayac);
+
 			// Bolunen parcalar, proseslere atanmasi icin degiskenlere ataniyor.
 			int varisZamani = Integer.parseInt(tokens[0]);
 			int oncelik = Integer.parseInt(tokens[1]);
 			int prosesZamani = Integer.parseInt(tokens[2]);
-
-			// Proses ID, istenen formata donusturuluyor.
-			String pid = String.format("%03d", pidSayac);
 
 			// Okunan satirlar, proseslere donusturulerek listeye ekleniyor.
 			okunanProsesler.add(new Process(pid, varisZamani, oncelik, prosesZamani));
@@ -100,5 +116,23 @@ public class Gorevlendirici {
 					prosesOncelik3.add(process);
 			}
 		}
+	}
+
+	// Gercek zamanli prosesler icin Ilk Gelen Ilk Calýsýr tipi siralayici fonksiyon
+	public void FCFS() {
+//		if(!gercekZamanli.isEmpty()) {
+//			gercekZamanli.get(0).Calistir();
+//		}
+	}
+
+	// Kullanici prosesleri icin (1. ve 2. oncelik) Geri Beslemeli tipi siralayici
+	// fonksiyon
+	public void GeriBesleme() {
+
+	}
+
+	// Kullanici prosesleri icin (3. oncelik) Round-Robin tipi siralayici fonksion
+	public void RoundRobin() {
+
 	}
 }
