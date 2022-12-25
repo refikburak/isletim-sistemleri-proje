@@ -135,4 +135,55 @@ public class Gorevlendirici {
 	public void RoundRobin() {
 
 	}
+
+	// GECICI VEYA KALICI OLARAK BURDA
+	public void Calistir() {
+
+		// Programin kuyruklarda proses kalmayana kadar calismasi icin sonsuz dongu
+		// olusturuluyor.
+		while (true) {
+
+			// Program sayaci her arttiginda varis suresi dolmus bir proses varsa, gerekli
+			// kuyruga eklenmesi icin gerekli fonksiyon cagiriliyor.
+			// Bu fonksiyon cagirilirken, gecici liste icinde veri olup olmadigi kontrolu
+			// yapiliyor.
+			if (!(okunanProsesler.isEmpty())) {
+				KuyrugaEkle();
+			}
+
+			// Gercek zamanli proses listesi bos degilse FCFS siralayici kullaniliyor.
+			if (!(gercekZamanli.isEmpty())) {
+				FCFS();
+			}
+
+			// Gercek zamanli kuyruk bossa 1. oncelikli prosesler kontrol ediliyor.
+			// Kuyruk bos degilse Geri Beslemeli siralayici kullaniliyor.
+			else if (!(prosesOncelik1.isEmpty())) {
+				GeriBesleme();
+			}
+
+			// 1. oncelik kuyrugu bossa 1. oncelikli prosesler kontrol ediliyor.
+			// Kuyruk bos degilse Geri Beslemeli siralayici kullaniliyor.
+			else if (!(prosesOncelik2.isEmpty())) {
+				GeriBesleme();
+			}
+
+			// 2. oncelik kuyrugu bossa 3. oncelikli prosesler kontrol ediliyor.
+			// Kuyruk bos degilse Round Robin siralayici kullaniliyor.
+			else if (!(prosesOncelik3.isEmpty())) {
+				RoundRobin();
+			}
+
+			// Eger 3. oncelik kuyrugu da bossa, tum kuyruklar kontrol edilmis oldugu icin
+			// kuyrukta proses kalmamis oluyor. Bu sartlarda da program sonlaniyor ve sonsuz
+			// dongumuz bitiriliyor.
+			else {
+				System.out.println("Program sonlandý.");
+				break;
+			}
+
+			// Her dongunun sonunda program sayacý arttýrýlýyor.
+			programSayaci++;
+		}
+	}
 }

@@ -13,9 +13,8 @@ public class Process {
 		this.varisZamani = varisZamani;
 	}
 
-	public void yazdir() {
-		System.out.println("Oncelik:" + oncelik);
-		System.out.println("Patlama:" + patlamaZamani);
-		System.out.println("Varis:" + varisZamani);
+	public void Calistir() throws InterruptedException {
+		patlamaZamani -= 1;
+		Thread.sleep(1000);
 	}
 }
