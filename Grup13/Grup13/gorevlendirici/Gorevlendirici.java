@@ -26,76 +26,76 @@ public class Gorevlendirici {
 	List<Process> prosesOncelik2;
 	List<Process> prosesOncelik3;
 
-	// Sinifta kullanilacak fonksiyonlarin gerçeklenmesi kurucu fonksiyonda
-	// yapýlýyor.
+	// Sinifta kullanilacak fonksiyonlarin gerceklenmesi kurucu fonksiyonda
+	// yapiliyor.
 	public Gorevlendirici(String dosya) throws FileNotFoundException {
-		// TODO ornek.txt "dosya" parametresiyle deðiþtirilecek.
+		// TODO ornek.txt "dosya" parametresiyle degistirilecek.
 		scanner = new Scanner(new File("ornek.txt"));
 
-		// Proses kuyruklarý için boþ listeler tanýmlanýyor.
+		// Proses kuyruklari icin bos listeler tanimlaniyor.
 		okunanProsesler = new ArrayList<Process>();
 		gercekZamanli = new ArrayList<Process>();
 		prosesOncelik1 = new ArrayList<Process>();
 		prosesOncelik2 = new ArrayList<Process>();
 		prosesOncelik3 = new ArrayList<Process>();
 
-		// Program sayacý için deðer atamasý yapýlýyor.
+		// Program sayaci icin deger atamasi yapiliyor.
 		programSayaci = 0;
 	}
 
 	// Dosyadan okuma yapan fonksiyon.
 	public void Oku() {
 
-		// Proses ID atanmasý için deðiþken tutuluyor.
+		// Proses ID atanmasi icin degisken tutuluyor.
 		int pidSayac = 0;
 
 		while (scanner.hasNextLine()) {
-			// Satýr, gerekli parçalara ayrýlýyor.
+			// Satir, gerekli parcalara ayriliyor.
 			String[] tokens = scanner.nextLine().split(", ");
 
-			// Bölünen parçalar, proseslere atanmasý için deðiþkenlere atanýyor.
+			// Bolunen parcalar, proseslere atanmasi icin degiskenlere ataniyor.
 			int varisZamani = Integer.parseInt(tokens[0]);
 			int oncelik = Integer.parseInt(tokens[1]);
 			int prosesZamani = Integer.parseInt(tokens[2]);
 
-			// Proses ID, istenen formata dönüþtürülüyor.
+			// Proses ID, istenen formata donusturuluyor.
 			String pid = String.format("%03d", pidSayac);
 
-			// Okunan satýrlar, proseslere dönüþtürülerek listeye ekleniyor.
+			// Okunan satirlar, proseslere donusturulerek listeye ekleniyor.
 			okunanProsesler.add(new Process(pid, varisZamani, oncelik, prosesZamani));
 
-			// Proses ID'lerinin eþsiz olmasý için okunan her satýrda sayaç arttýrýlýyor.
+			// Proses ID'lerinin essiz olmasi icin okunan her satirda sayac arttiriliyor.
 			pidSayac++;
 		}
 		scanner.close();
 	}
 
-	// Varýþ süresi gelmiþ yani hazýr prosesler, bu fonksiyonla gerekli kuyruklara
+	// Varis suresi gelmis yani hazir prosesler, bu fonksiyonla gerekli kuyruklara
 	// ekleniyor.
 	public void KuyrugaEkle() {
 
-		// Okunan proseslerin varýþ süreleri program sayacýyla karþýlaþtýrýlýyor.
-		// Program sayacý, sýnýfýn bir elemaný olduðu için direkt eriþilebilir halde, o
-		// yüzden parametre ile eriþilmesine gerek yok.
+		// Okunan proseslerin varis sureleri program sayaciyla karsilastiriliyor.
+		// Program sayaci, sinifin bir elemani oldugu icin direkt erisilebilir halde, o
+		// yuzden parametre ile erisilmesine gerek yok.
 		for (Process process : okunanProsesler) {
 
-			// Eðer varýþ süresi program sayacýna eþitse, yani proses hazýrsa; önceliðine
-			// göre kuyruða ekleniyor.
+			// Eger varis suresi program sayacina esitse, yani proses hazirsa; onceligine
+			// gore kuyruga ekleniyor.
 			if (process.varisZamani == programSayaci) {
 
-				// Öncelik 0, gerçek zamanlý proseslerin kuyruða eklenmesi.
+				// Oncelik 0, gercek zamanli proseslerin kuyruga eklenmesi.
 				if (process.oncelik == 0)
 					gercekZamanli.add(process);
 
-				// Öncelik 1, kullanýcý proseslerinin geri beslemeli kuyruða eklenmesi.
+				// Oncelik 1, kullanici proseslerinin geri beslemeli kuyruga eklenmesi.
 				else if (process.oncelik == 1)
 					prosesOncelik1.add(process);
 
-				// Öncelik 2, kullanýcý proseslerinin geri beslemeli kuyruða eklenmesi.
+				// Oncelik 2, kullanici proseslerinin geri beslemeli kuyruga eklenmesi.
 				else if (process.oncelik == 2)
 					prosesOncelik2.add(process);
 
-				// Öncelik 3, kullanýcý proseslerinin round-robin kuyruðuna eklenmesi.
+				// Oncelik 3, kullanici proseslerinin round-robin kuyruguna eklenmesi.
 				else
 					prosesOncelik3.add(process);
 			}
