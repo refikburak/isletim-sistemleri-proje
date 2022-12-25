@@ -19,14 +19,28 @@ import java.util.Scanner;
 
 public class Gorevlendirici {
 	Scanner scanner;
+	int programSayaci;
 	List<Process> okunanProsesler;
+	List<Process> gercekZamanli;
+	List<Process> prosesOncelik1;
+	List<Process> prosesOncelik2;
+	List<Process> prosesOncelik3;
 
 	// Sýnýfta kullanýlacak fonksiyonlarýn gerçeklenmesi kurucu fonksiyonda
 	// yapýlýyor.
 	public Gorevlendirici(String dosya) throws FileNotFoundException {
 		// TODO ornek.txt "dosya" parametresiyle deðiþtirilecek.
 		scanner = new Scanner(new File("ornek.txt"));
+
+		// Proses kuyruklarý için boþ listeler tanýmlanýyor.
 		okunanProsesler = new ArrayList<Process>();
+		gercekZamanli = new ArrayList<Process>();
+		prosesOncelik1 = new ArrayList<Process>();
+		prosesOncelik2 = new ArrayList<Process>();
+		prosesOncelik3 = new ArrayList<Process>();
+
+		// Program sayacý için deðer atamasý yapýlýyor.
+		programSayaci = 0;
 	}
 
 	// Dosyadan okuma yapan fonksiyon.
@@ -53,7 +67,38 @@ public class Gorevlendirici {
 			// Proses ID'lerinin eþsiz olmasý için okunan her satýrda sayaç arttýrýlýyor.
 			pidSayac++;
 		}
-
 		scanner.close();
+	}
+
+	// Varýþ süresi gelmiþ yani hazýr prosesler, bu fonksiyonla gerekli kuyruklara
+	// ekleniyor.
+	public void KuyrugaEkle() {
+
+		// Okunan proseslerin varýþ süreleri program sayacýyla karþýlaþtýrýlýyor.
+		// Program sayacý, sýnýfýn bir elemaný olduðu için direkt eriþilebilir halde, o
+		// yüzden parametre ile eriþilmesine gerek yok.
+		for (Process process : okunanProsesler) {
+
+			// Eðer varýþ süresi program sayacýna eþitse, yani proses hazýrsa; önceliðine
+			// göre kuyruða ekleniyor.
+			if (process.varisZamani == programSayaci) {
+
+				// Öncelik 0, gerçek zamanlý proseslerin kuyruða eklenmesi.
+				if (process.oncelik == 0)
+					gercekZamanli.add(process);
+
+				// Öncelik 1, kullanýcý proseslerinin geri beslemeli kuyruða eklenmesi.
+				else if (process.oncelik == 1)
+					prosesOncelik1.add(process);
+
+				// Öncelik 2, kullanýcý proseslerinin geri beslemeli kuyruða eklenmesi.
+				else if (process.oncelik == 2)
+					prosesOncelik2.add(process);
+
+				// Öncelik 3, kullanýcý proseslerinin round-robin kuyruðuna eklenmesi.
+				else
+					prosesOncelik3.add(process);
+			}
+		}
 	}
 }
