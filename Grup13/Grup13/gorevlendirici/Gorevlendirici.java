@@ -6,19 +6,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-//FCFS
-//GERÝBESLEME
-//ROUNDROBÝN
+//FCFS 
+//GERï¿½BESLEME
+//ROUNDROBï¿½N
 //RENK KODLARINI PROCESSSE PROP OLARAK VERME
-//20 SANÝYE SONRA ZORTLATMA -KAMIL CAGLAR
-//YAZDIRMA -KAMIL CAGLAR
+//20 SANï¿½YE SONRA ZORTLATMA -KAMIL CAGLAR
+//YAZDIRMA -KAMIL CAGLAR (Kamil basladi)
 
 //OPSIYONELLER
 //LIST YERINE QUEUEUEUE
 //1 2 3 ONCELIKLILERI KULLANICI PROSESLERI DIYE BI ARRAYE ALMAK
 
 //RAPOR 
-//DOSYA YERÝNE ARGS PARAMETRESÝ
+//DOSYA YERï¿½NE ARGS PARAMETRESï¿½
 
 //!!!!!!!!!!!! RENK KODLARI AMA WINDOWSTA CALISMIYOR :):)!!!!!!!!!!!!!!!!!!
 //public static final String ANSI_RESET = "\u001B[0m";
@@ -49,7 +49,7 @@ public class Gorevlendirici {
 	// Program ilerlemesini tutmak ve yonetmek icin program sayaci
 	int programSayaci;
 
-	// Proseslerin tutulup yönetileceði kuyruklar
+	// Proseslerin tutulup yï¿½netileceï¿½i kuyruklar
 	List<Process> okunanProsesler;
 	List<Process> gercekZamanli;
 	List<Process> prosesOncelik1;
@@ -132,7 +132,7 @@ public class Gorevlendirici {
 		}
 	}
 
-	// Gercek zamanli prosesler icin Ilk Gelen Ilk Calýsýr tipi siralayici fonksiyon
+	// Gercek zamanli prosesler icin Ilk Gelen Ilk Calï¿½sï¿½r tipi siralayici fonksiyon
 	public void FCFS() {
 //		if(!gercekZamanli.isEmpty()) {
 //			gercekZamanli.get(0).Calistir();
@@ -192,11 +192,11 @@ public class Gorevlendirici {
 			// kuyrukta proses kalmamis oluyor. Bu sartlarda da program sonlaniyor ve sonsuz
 			// dongumuz bitiriliyor.
 			else {
-				System.out.println("Program sonlandý.");
+				System.out.println("Program sonlandï¿½.");
 				break;
 			}
 
-			// Her dongunun sonunda program sayacý arttýrýlýyor.
+			// Her dongunun sonunda program sayacï¿½ arttï¿½rï¿½lï¿½yor.
 			programSayaci++;
 		}
 	}
