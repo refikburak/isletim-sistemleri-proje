@@ -6,6 +6,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+//FCFS
+//GERÝBESLEME
+//ROUNDROBÝN
+//RENK KODLARINI PROCESSSE PROP OLARAK VERME
+//20 SANÝYE SONRA ZORTLATMA -KAMIL CAGLAR
+//YAZDIRMA -KAMIL CAGLAR
+
+//OPSIYONELLER
+//LIST YERINE QUEUEUEUE
+//1 2 3 ONCELIKLILERI KULLANICI PROSESLERI DIYE BI ARRAYE ALMAK
+
+//RAPOR 
+//DOSYA YERÝNE ARGS PARAMETRESÝ
+
 //!!!!!!!!!!!! RENK KODLARI AMA WINDOWSTA CALISMIYOR :):)!!!!!!!!!!!!!!!!!!
 //public static final String ANSI_RESET = "\u001B[0m";
 //public static final String ANSI_BLACK = "\u001B[30m";
