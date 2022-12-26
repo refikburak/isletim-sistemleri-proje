@@ -4,17 +4,14 @@ public class Process {
 	String pid;
 	int varisZamani;
 	int oncelik;
-	int patlamaZamani;
+	int processZamani;
+	boolean dahaOnceCalistiMi; //1 ise basladi,2 ise askida,3 ise yurutuluyor,4 sonlandi
 
-	public Process(String pid, int varisZamani, int oncelik, int patlamaZamani) {
+	public Process(String pid, int varisZamani, int oncelik, int processZamani) {
 		this.pid = pid;
 		this.oncelik = oncelik;
-		this.patlamaZamani = patlamaZamani;
+		this.processZamani = processZamani;
 		this.varisZamani = varisZamani;
 	}
 
-	public void Calistir() throws InterruptedException {
-		patlamaZamani -= 1;
-		Thread.sleep(1000);
-	}
 }
