@@ -5,7 +5,8 @@ public class Process {
 	int varisZamani;
 	int oncelik;
 	int processZamani;
-	boolean dahaOnceCalistiMi; // 1 ise basladi,2 ise askida,3 ise yurutuluyor,4 sonlandi
+	boolean dahaOnceCalistiMi = false; // 1 ise basladi,2 ise askida,3 ise yurutuluyor,4 sonlandi
+	int baslamaZamani;
 
 	public Process(String pid, int varisZamani, int oncelik, int processZamani) {
 		this.pid = pid;

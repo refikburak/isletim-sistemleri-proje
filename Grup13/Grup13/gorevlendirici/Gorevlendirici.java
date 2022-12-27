@@ -148,15 +148,15 @@ public class Gorevlendirici {
 	// Gercek zamanli prosesler icin Ilk Gelen Ilk Cal�s�r tipi siralayici fonksiyon
 	public void FCFS(Queue<Process> gercekzamanli) {
 		Process mevcutProcess = gercekzamanli.peek();
-		System.out.println(mevcutProcess.pid + "pid'li process yürütülüyor..");
+		//System.out.println(mevcutProcess.pid + "pid'li process yürütülüyor..");
 
 		if (mevcutProcess.processZamani > 0) {
-			System.out.println("Önceki process zamanı : " + gercekzamanli.peek().processZamani);
+			//System.out.println("onceki process zamanı : " + gercekzamanli.peek().processZamani);
 			gercekzamanli.peek().Calistir();
-			System.out.println("Mevcut process zamanı : " + gercekzamanli.peek().processZamani);
+			//System.out.println("Mevcut process zamanı : " + gercekzamanli.peek().processZamani);
 		} else if (gercekzamanli.peek().processZamani == 0) {
 			Process silinecekProcess = gercekzamanli.remove();
-			System.out.println(silinecekProcess.pid + " pid'li process silinecek.");
+			//System.out.println(silinecekProcess.pid + " pid'li process silinecek.");
 
 		}
 	}
@@ -184,10 +184,10 @@ public class Gorevlendirici {
 	public void RoundRobin() {
 
 		prosesOncelik3.peek().Calistir();
-		System.out.println("PC: " + programSayaci + "    ###    " + prosesOncelik3.peek().pid
-				+ " pid'li eleman calisti.Kalan zaman : " + prosesOncelik3.peek().processZamani);
+		//System.out.println("PC: " + programSayaci + "    ###    " + prosesOncelik3.peek().pid
+			//	+ " pid'li eleman calisti.Kalan zaman : " + prosesOncelik3.peek().processZamani);
 		if (prosesOncelik3.peek().processZamani == 0) {
-			System.out.println("proses geberdi" + prosesOncelik3.peek().pid);
+			//System.out.println("proses geberdi" + prosesOncelik3.peek().pid);
 			prosesOncelik3.remove();
 		} else {
 			Process gecici = prosesOncelik3.poll();
@@ -195,8 +195,8 @@ public class Gorevlendirici {
 		}
 
 		if (!prosesOncelik3.isEmpty()) {
-			System.out.println("Sonraki hali :" + prosesOncelik3.peek().pid + "calisti.zaman :"
-					+ prosesOncelik3.peek().processZamani);
+			//System.out.println("Sonraki hali :" + prosesOncelik3.peek().pid + "calisti.zaman :"
+				//	+ prosesOncelik3.peek().processZamani);
 		}
 
 	}
@@ -205,6 +205,9 @@ public class Gorevlendirici {
 	public void Calis() {
 		// Programin kuyruklarda proses kalmayana kadar calismasi icin sonsuz dongu
 		// olusturuluyor.
+		
+		Process mevcutProcess = null;
+		Process geciciProcess = null;
 		while (true) {
 
 			// Program sayaci her arttiginda varis suresi dolmus bir proses varsa, gerekli
@@ -213,11 +216,18 @@ public class Gorevlendirici {
 			// yapiliyor.
 			if (!(okunanProcessler.isEmpty())) {
 				KuyrugaEkle();
+				//System.out.println("denme1");
 			}
 
 			// Gercek zamanli proses listesi bos degilse FCFS siralayici kullaniliyor.
 			if (!(gercekZamanli.isEmpty())) {
 				FCFS(gercekZamanli);
+				//System.out.println("denme2");
+				mevcutProcess=gercekZamanli.peek();
+				 if (!mevcutProcess.dahaOnceCalistiMi) {
+					 mevcutProcess.baslamaZamani = programSayaci;
+					 mevcutProcess.dahaOnceCalistiMi=true;
+				 }
 			}
 
 			// Gercek zamanli kuyruk bossa 1. oncelikli prosesler kontrol ediliyor.
@@ -225,6 +235,13 @@ public class Gorevlendirici {
 			else if (!(prosesOncelik1.isEmpty())) {
 				FCFS(prosesOncelik1);
 				// GeriBesleme(prosesOncelik1);
+				//System.out.println("denme3");
+				
+				 mevcutProcess=prosesOncelik1.peek();
+				 if (!mevcutProcess.dahaOnceCalistiMi) {
+					 mevcutProcess.baslamaZamani = programSayaci;
+					 mevcutProcess.dahaOnceCalistiMi=true;
+				 }
 			}
 
 			// 1. oncelik kuyrugu bossa 1. oncelikli prosesler kontrol ediliyor.
@@ -232,12 +249,25 @@ public class Gorevlendirici {
 			else if (!(prosesOncelik2.isEmpty())) {
 				FCFS(prosesOncelik2);
 				// GeriBesleme();
+				//System.out.println("denme4");
+				
+				mevcutProcess=prosesOncelik2.peek();
+				 if (!mevcutProcess.dahaOnceCalistiMi) {
+					 mevcutProcess.baslamaZamani = programSayaci;
+					 mevcutProcess.dahaOnceCalistiMi=true;
+				 }
 			}
 
 			// 2. oncelik kuyrugu bossa 3. oncelikli prosesler kontrol ediliyor.
 			// Kuyruk bos degilse Round Robin siralayici kullaniliyor.
 			else if (!(prosesOncelik3.isEmpty())) {
 				RoundRobin();
+				
+				mevcutProcess=prosesOncelik3.peek();
+				 if (!mevcutProcess.dahaOnceCalistiMi) {
+					 mevcutProcess.baslamaZamani = programSayaci;
+					 mevcutProcess.dahaOnceCalistiMi=true;
+				 }
 			}
 
 			// Eger 3. oncelik kuyrugu da bossa, tum kuyruklar kontrol edilmis oldugu icin
@@ -245,10 +275,71 @@ public class Gorevlendirici {
 			// dongumuz bitiriliyor.
 			else {
 				System.out.println("Program sonlandi.");
-				break;
+				//break;
 			}
+			
+			
+			
+			System.out.println("YAZDIR");
+			
+
+			if(mevcutProcess!=null && geciciProcess==null)
+			{
+				System.out.println(programSayaci+ "sn proses basladi     id"+mevcutProcess.pid + " oncelik: "+mevcutProcess.oncelik);
+				
+			}
+			else if(geciciProcess.pid==mevcutProcess.pid)
+			{
+				System.out.println(programSayaci+ "sn proses yurutuluyor       id"+mevcutProcess.pid + " oncelik: "+mevcutProcess.oncelik);
+				
+			}
+			
+			else if(geciciProcess.pid!=mevcutProcess.pid)
+			{
+				if(geciciProcess.processZamani==0)
+				{
+					System.out.println(programSayaci+ "proses sonlandi        id"+geciciProcess.pid + " oncelik: "+geciciProcess.oncelik);
+					System.out.println(programSayaci+ "sn proses basladi        id"+mevcutProcess.pid + " oncelik: "+mevcutProcess.oncelik);
+				}
+				else if(geciciProcess.processZamani!=0)
+				{
+					System.out.println(programSayaci+ "askida        id"+geciciProcess.pid + " oncelik: "+geciciProcess.oncelik);
+					System.out.println(programSayaci+ "sn proses basladi        id"+mevcutProcess.pid + " oncelik: "+mevcutProcess.oncelik);
+					
+				}
+			
+				
+				
+			}
+			else
+				System.out.println("sictin");
+			// yazdir
+			/*
+			 if(programSayacı==0) gecici proses boşsa ve mevcut boş degilse yazdir ilk
+			 * proses
+			 * 
+			 * 
+			 * else if(gecici=mevcutProses.pid) aynı proseses yürütülüyor demektir
+			 * 			if(prosesin baslamaZamani <= programSayaci) if proses calisti mi yazdir
+			 * 			proses yürütülüyor else yazdir proses baslatiliyor else
+			 * if(!gecici=mevcutProses.pid)
+			 * 
+			 * 			if(geciciPatlamazamanı=0) else yazdir gecici pid proses sonlandı yazdir
+			 * 			mevcut proses basladi 
+			 * 			if(proses daha Once calisti mi) yazdir askiya alınan
+			 * 			proses proses basladi yazdir gecici pid proses sonlandı else yazdir proses
+			 * 			askıda askıdaki prosesler listesine ekle
+			 * 
+			 * askıdaki proses listesini dOn kontrol et baslamaZamani 20 saniyeyi asan var
+			 * 
+			 * mı int gecici = mevcutProses.pid / gecici proses =mevcut proses
+			 */
 
 			// Her dongunun sonunda program sayac� artt�r�l�yor.
+			
+
+			// Her dongunun sonunda program sayac� artt�r�l�yor.
+			geciciProcess = mevcutProcess;
 			programSayaci++;
 		}
 	}
