@@ -3,7 +3,6 @@ package gorevlendirici;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -15,6 +14,7 @@ import java.util.Scanner;
 //RENK KODLARINI PROCESSSE PROP OLARAK VERME
 //20 SAN�YE SONRA ZORTLATMA -KAMIL CAGLAR
 //YAZDIRMA -KAMIL CAGLAR
+//YAZDIRMA -KAMIL CAGLAR (Kamil basladi)
 
 //OPSIYONELLER
 //LIST YERINE QUEUEUEUE
@@ -45,8 +45,6 @@ import java.util.Scanner;
 // PROGRAM SAYACI KONTROLUNU MAIN DOSYASINDA YAPALIM DIYORUM. SAYACI ORDAN ARTTIRIP SANIYE ILERLETMIS GIBI ORADAN HALLEDERIZ.
 //ALGORITMALAR ICINE BEKLEME EKLEMEYE GEREK OLDUGUNU DUSUNMUYORUM. BEKLEMEYI PROSESLERIN ICINE EKLERIZ.
 
-
-
 //Process sinifina bir iki bir sey ekledim deneme icin o onemli degil simdilik
 //ornek.txt den deneme yapabilmek icin simdilik proje dosyasinin icerisine yerlestirdim
 //direkt gorevlendirici mainini calistiriyorum. 
@@ -58,7 +56,7 @@ public class Gorevlendirici {
 	Scanner scanner;
 
 	// Program ilerlemesini tutmak ve yonetmek icin program sayaci
-	int programSayaci=0;
+	int programSayaci = 0;
 
 	// Proseslerin tutulup y�netilece�i kuyruklar
 	List<Process> okunanProcessler;
@@ -73,7 +71,7 @@ public class Gorevlendirici {
 		// TODO ornek.txt "dosya" parametresiyle degistirilecek.
 
 		// Program sayaci icin deger atamasi yapiliyor.
-		//programSayaci = 0;
+		// programSayaci = 0;
 
 		// Proses kuyruklari icin bos listeler tanimlaniyor.
 		okunanProcessler = new ArrayList<Process>();
@@ -104,12 +102,11 @@ public class Gorevlendirici {
 
 			// Okunan satirlar, proseslere donusturulerek listeye ekleniyor.
 			okunanProcessler.add(new Process(pid, varisZamani, oncelik, processZamani));
-			System.out.println(okunanProcessler.get(pidSayac).oncelik+" okunan prosesin onceligi ");
 			// Proses ID'lerinin essiz olmasi icin okunan her satirda sayac arttiriliyor.
 			pidSayac++;
 		}
 		scanner.close();
-		Calistir();
+		Calis();
 	}
 
 	// Varis suresi gelmis yani hazir prosesler, bu fonksiyonla gerekli kuyruklara
@@ -138,12 +135,10 @@ public class Gorevlendirici {
 				else if (process.oncelik == 2) {
 					prosesOncelik2.add(process);
 
-
 				}
 				// Oncelik 3, kullanici proseslerinin round-robin kuyruguna eklenmesi.
 				else {
 					prosesOncelik3.add(process);
-
 
 				}
 			}
@@ -152,88 +147,62 @@ public class Gorevlendirici {
 
 	// Gercek zamanli prosesler icin Ilk Gelen Ilk Cal�s�r tipi siralayici fonksiyon
 	public void FCFS(Queue<Process> gercekzamanli) {
-		//Kod tekrari olmasin diye geri besleme icinde de fcfs kullanacagimiz icin
-		//geri besleme olacak kuyruklari da ilk önce buraya attim,gerçek zamanli degilse
-		//geri besleme fonksiyonuna yonlendirdim bitip bitmedigini de kontrol ederek.
-		Process mevcutProcess=gercekzamanli.peek();
+		Process mevcutProcess = gercekzamanli.peek();
 		System.out.println(mevcutProcess.pid + "pid'li process yürütülüyor..");
-		if (mevcutProcess.oncelik==0) {
-			if(mevcutProcess.processZamani>0) {
-				if (mevcutProcess.dahaOnceCalistiMi) {
-					
-				}
-			System.out.println("Önceki process zamanı : "+gercekzamanli.peek().processZamani);
-			gercekzamanli.peek().processZamani--;
-			System.out.println("Mevcut process zamanı : "+gercekzamanli.peek().processZamani);
-			}
-			else if (gercekzamanli.peek().processZamani==0){
-				Process silinecekProcess=gercekzamanli.remove();
-				System.out.println(silinecekProcess.pid+" pid'li process silinecek.");
-			} 
-		}
-		else {
-			if (gercekzamanli.peek().processZamani>0) {
-				System.out.println("Önceki process zamanı : "+gercekzamanli.peek().processZamani);
-				gercekzamanli.peek().processZamani--;
-				System.out.println("Mevcut process zamanı : "+gercekzamanli.peek().processZamani);
-				System.out.println("Öncelik : "+gercekzamanli.peek().oncelik);
 
-				GeriBesleme(gercekzamanli.poll());
-			}
-			else {
+		if (mevcutProcess.processZamani > 0) {
+			System.out.println("Önceki process zamanı : " + gercekzamanli.peek().processZamani);
+			gercekzamanli.peek().Calistir();
+			System.out.println("Mevcut process zamanı : " + gercekzamanli.peek().processZamani);
+		} else if (gercekzamanli.peek().processZamani == 0) {
+			Process silinecekProcess = gercekzamanli.remove();
+			System.out.println(silinecekProcess.pid + " pid'li process silinecek.");
 
-				Process silinecekProcess=gercekzamanli.remove();
-				System.out.println(silinecekProcess.pid+" pid'li process silinecek.");
-			}
 		}
 	}
 
 	// Kullanici prosesleri icin (1. ve 2. oncelik) Geri Beslemeli tipi siralayici
 	// fonksiyon
-	public void GeriBesleme(Process process) {
-		//fcfs den buraya yonlendirdigim gercek zamanli olmayan fonksiyonlarin oncelik degerlerini dusurudm
-		
-		if (process.oncelik==1) {
-			prosesOncelik2.add(process);
-			process.oncelik++;
+	public void GeriBesleme() {
+		// fcfs den buraya yonlendirdigim gercek zamanli olmayan fonksiyonlarin oncelik
+		// degerlerini dusurudm
+
+		if (!(prosesOncelik1.isEmpty())) {
+			Process gecici = prosesOncelik1.poll();
+			gecici.oncelik++;
+			prosesOncelik2.add(gecici);
+
+		} else if (!(prosesOncelik2.isEmpty())) {
+			Process gecici = prosesOncelik2.poll();
+			gecici.oncelik++;
+			prosesOncelik3.add(gecici);
 		}
-		else if (process.oncelik==2) {
-			prosesOncelik3.add(process);
-			process.oncelik++;
-		}
+
 	}
 
 	// Kullanici prosesleri icin (3. oncelik) Round-Robin tipi siralayici fonksion
-	public void RoundRobin(Queue<Process> kuyruk) {
-		//Burada bir şeyler denedim ama butun processler 3. kuyruktayken varis zamani yeni gelen
-		// bir process oldugu zaman onu okumadan buradan devam ediyor yani rr basladiginnda
-		//calistir fonksiyonu donmeye devam etmeli ama onu yaparken de kuyrugu dolasmada sikinti
-		//yasiyorum her seferinde kuyrugun basindaki processe geri donuyor. Kisacasi
-		//bu fonksiyonun icini silmeden prog dogru calismaz deneme yapacak olursaniz silin:)
-		Process mevcutProcess=kuyruk.peek();
-		for (Process process: kuyruk) {
-			
-				if(process.processZamani>0) {
-					System.out.println(process.pid+" pid'li process işliyor");
-					System.out.println("Önceki process zamanı : "+process.processZamani);
-					process.processZamani--;
-					System.out.println("Mevcut process zamanı : "+process.processZamani);
-				}
-				else if (process.processZamani==0){
-					//Process silinecekProcess=kuyruk.remove();
-					//System.out.println(process.pid+" pid'li process silinecek.");
-				} 
-				
-				RRSayac++;
-				programSayaci++;
+	public void RoundRobin() {
+
+		prosesOncelik3.peek().Calistir();
+		System.out.println("PC: " + programSayaci + "    ###    " + prosesOncelik3.peek().pid
+				+ " pid'li eleman calisti.Kalan zaman : " + prosesOncelik3.peek().processZamani);
+		if (prosesOncelik3.peek().processZamani == 0) {
+			System.out.println("proses geberdi" + prosesOncelik3.peek().pid);
+			prosesOncelik3.remove();
+		} else {
+			Process gecici = prosesOncelik3.poll();
+			prosesOncelik3.add(gecici);
 		}
-		
-		
-		
+
+		if (!prosesOncelik3.isEmpty()) {
+			System.out.println("Sonraki hali :" + prosesOncelik3.peek().pid + "calisti.zaman :"
+					+ prosesOncelik3.peek().processZamani);
+		}
+
 	}
 
 	// GECICI VEYA KALICI OLARAK BURDA
-	public void Calistir() {
+	public void Calis() {
 		// Programin kuyruklarda proses kalmayana kadar calismasi icin sonsuz dongu
 		// olusturuluyor.
 		while (true) {
@@ -255,20 +224,20 @@ public class Gorevlendirici {
 			// Kuyruk bos degilse Geri Beslemeli siralayici kullaniliyor.
 			else if (!(prosesOncelik1.isEmpty())) {
 				FCFS(prosesOncelik1);
-				//GeriBesleme(prosesOncelik1);
+				// GeriBesleme(prosesOncelik1);
 			}
 
 			// 1. oncelik kuyrugu bossa 1. oncelikli prosesler kontrol ediliyor.
 			// Kuyruk bos degilse Geri Beslemeli siralayici kullaniliyor.
 			else if (!(prosesOncelik2.isEmpty())) {
 				FCFS(prosesOncelik2);
-				//GeriBesleme();
+				// GeriBesleme();
 			}
 
 			// 2. oncelik kuyrugu bossa 3. oncelikli prosesler kontrol ediliyor.
 			// Kuyruk bos degilse Round Robin siralayici kullaniliyor.
 			else if (!(prosesOncelik3.isEmpty())) {
-				//RoundRobin(prosesOncelik3);
+				RoundRobin();
 			}
 
 			// Eger 3. oncelik kuyrugu da bossa, tum kuyruklar kontrol edilmis oldugu icin
