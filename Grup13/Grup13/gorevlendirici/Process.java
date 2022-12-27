@@ -15,6 +15,15 @@ public class Process {
 		this.varisZamani = varisZamani;
 	}
 
+	public Process(Process p) {
+		this.pid = p.pid;
+		this.oncelik = p.oncelik;
+		this.processZamani = p.processZamani;
+		this.varisZamani = p.varisZamani;
+		this.dahaOnceCalistiMi = p.dahaOnceCalistiMi;
+		this.baslamaZamani = p.baslamaZamani;
+	}
+
 	public void Calistir() {
 		processZamani = processZamani - 1;
 	}
