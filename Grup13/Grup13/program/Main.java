@@ -11,7 +11,6 @@ public class Main {
 		pb.redirectOutput(ProcessBuilder.Redirect.INHERIT);
 //		Process proc = pb.start();
 		pb.start();
-
 	}
 
 }
