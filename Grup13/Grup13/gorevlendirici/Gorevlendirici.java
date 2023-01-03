@@ -3,22 +3,9 @@ package gorevlendirici;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
+import java.util.ListIterator;
 import java.util.Scanner;
-
-//FCFS
-//GERï¿½BESLEME
-//ROUNDROBï¿½N
-//RENK KODLARINI PROCESSSE PROP OLARAK VERME
-//20 SANï¿½YE SONRA ZORTLATMA -KAMIL CAGLAR
-//YAZDIRMA -KAMIL CAGLAR
-//YAZDIRMA -KAMIL CAGLAR (Kamil basladi)
-
-//OPSIYONELLER
-//LIST YERINE QUEUEUEUE
-//1 2 3 ONCELIKLILERI KULLANICI PROSESLERI DIYE BI ARRAYE ALMAK
 
 //RAPOR 
 //DOSYA YERï¿½NE ARGS PARAMETRESï¿½
@@ -34,17 +21,6 @@ import java.util.Scanner;
 //public static final String ANSI_CYAN = "\u001B[36m";
 //public static final String ANSI_WHITE = "\u001B[37m";
 
-//SIRALAMA ALGORITMALARINI YAZARKEN VARIS ZAMANI VEYA ONCELIK KONTROL ETMENIZE GEREK YOK. 
-//BU KUYRUKLARA PROSESLER DUZENLI OLARAK EKLENIYOR. HEP 0. INDEXTEKILERI CALISTIRICAZ. GEREKLI ISLEMLERI YAPTIRICAZ
-//HERHANGI BIR SEKILDE VARIS ZAMANI VEYA ONCELIK KONTROLUNE GEREK YOK.
-//List<Process> gercekZamanli; VARIS ZAMANI DOLMUS VE ONCELIGI 0 OLAN PROSESLER BURDA, EGER VARIS ZAMANI DOLMAMISSA EKLENMIYOR. VARIS ZAMANI DOLANLAR SONRADAN EKLENIYOR
-//List<Process> prosesOncelik1; AYNI SEKILDE VARIS ZAMANI DOLANLAR SONRADAN EKLENIYOR. ONCELIK 1 OLANLAR BURDA
-//List<Process> prosesOncelik2; ONCELIK 2 LER BURDA
-//List<Process> prosesOncelik3; ONCELIK 3 LER BURDA
-//GENEL CALISIR HALDE YAZILACAK. ICERIDE PROSESLER VARMIS VE HER KOSULDA CALISACAKMIS GIBI YAZILACAK.
-// PROGRAM SAYACI KONTROLUNU MAIN DOSYASINDA YAPALIM DIYORUM. SAYACI ORDAN ARTTIRIP SANIYE ILERLETMIS GIBI ORADAN HALLEDERIZ.
-//ALGORITMALAR ICINE BEKLEME EKLEMEYE GEREK OLDUGUNU DUSUNMUYORUM. BEKLEMEYI PROSESLERIN ICINE EKLERIZ.
-
 //Process sinifina bir iki bir sey ekledim deneme icin o onemli degil simdilik
 //ornek.txt den deneme yapabilmek icin simdilik proje dosyasinin icerisine yerlestirdim
 //direkt gorevlendirici mainini calistiriyorum. 
@@ -56,15 +32,19 @@ public class Gorevlendirici {
 	Scanner scanner;
 
 	// Program ilerlemesini tutmak ve yonetmek icin program sayaci
-	int programSayaci = 0;
+	int programSayaci;
 
-	// Proseslerin tutulup yï¿½netileceï¿½i kuyruklar
-	List<Process> okunanProcessler;
+	// Proseslerin tutulup yonetilecegi kuyruklar
+	List<Process> okunanProsesler;
 	List<Process> gercekZamanli;
 	List<Process> prosesOncelik1;
 	List<Process> prosesOncelik2;
 	List<Process> prosesOncelik3;
-	Process islemProcess = null;
+
+	// Yazdir fonksiyonuna yardimci olacak prosesler
+	Process oncekiProses;
+	Process islemOncesiProses;
+	Process islemSonrasiProses;
 
 	// Sinifta kullanilacak fonksiyonlarin gerceklenmesi kurucu fonksiyonda
 	// yapiliyor.
@@ -72,10 +52,10 @@ public class Gorevlendirici {
 		// TODO ornek.txt "dosya" parametresiyle degistirilecek.
 
 		// Program sayaci icin deger atamasi yapiliyor.
-		// programSayaci = 0;
+		programSayaci = 0;
 
 		// Proses kuyruklari icin bos listeler tanimlaniyor.
-		okunanProcessler = new ArrayList<Process>();
+		okunanProsesler = new ArrayList<Process>();
 		gercekZamanli = new ArrayList<Process>();
 		prosesOncelik1 = new ArrayList<Process>();
 		prosesOncelik2 = new ArrayList<Process>();
@@ -84,6 +64,7 @@ public class Gorevlendirici {
 
 	// Dosyadan okuma yapan ve gecici listeye atan fonksiyon
 	public void Oku() throws FileNotFoundException {
+
 		scanner = new Scanner(new File("ornek.txt"));
 
 		// Proses ID atanmasi icin degisken tutuluyor.
@@ -99,61 +80,122 @@ public class Gorevlendirici {
 			// Bolunen parcalar, proseslere atanmasi icin degiskenlere ataniyor.
 			int varisZamani = Integer.parseInt(tokens[0]);
 			int oncelik = Integer.parseInt(tokens[1]);
-			int processZamani = Integer.parseInt(tokens[2]);
+			int patlamaZamani = Integer.parseInt(tokens[2]);
 
 			// Okunan satirlar, proseslere donusturulerek listeye ekleniyor.
-			okunanProcessler.add(new Process(pid, varisZamani, oncelik, processZamani));
+			okunanProsesler.add(new Process(pid, varisZamani, oncelik, patlamaZamani));
 			// Proses ID'lerinin essiz olmasi icin okunan her satirda sayac arttiriliyor.
 			pidSayac++;
 		}
 		scanner.close();
+
 		Calis();
 	}
 
 	// Varis suresi gelmis yani hazir prosesler, bu fonksiyonla gerekli kuyruklara
 	// ekleniyor.
 	public void KuyrugaEkle() {
-		// Okunan proseslerin varis sureleri program sayaciyla karsilastiriliyor.
-		// Program sayaci, sinifin bir elemani oldugu icin direkt erisilebilir halde, o
-		// yuzden parametre ile erisilmesine gerek yok.
-		for (Process process : okunanProcessler) {
+
+		// Liste elemanlarina erisim icin iterator kullaniliyor.
+		ListIterator<Process> it = okunanProsesler.listIterator();
+
+		// Listede eleman oldugu surece donen while yapýsý
+		while (it.hasNext()) {
+
+			// Iterator'un gosterdigi proses, gecici bir proseste tutuluyor.
+			Process temp = it.next();
 
 			// Eger varis suresi program sayacina esitse, yani proses hazirsa; onceligine
 			// gore kuyruga ekleniyor.
-			if (process.varisZamani == programSayaci) {
+			if (temp.varisZamani == programSayaci) {
+
+				// Prosesleri onceliklerine gore kuyruklama eklemek icin switch kullaniliyor.
+				switch (temp.oncelik) {
 				// Oncelik 0, gercek zamanli proseslerin kuyruga eklenmesi.
-				if (process.oncelik == 0) {
-					gercekZamanli.add(process);
-
-				}
-
+				case 0:
+					gercekZamanli.add(temp);
+					it.remove();
+					break;
 				// Oncelik 1, kullanici proseslerinin geri beslemeli kuyruga eklenmesi.
-				else if (process.oncelik == 1) {
-					prosesOncelik1.add(process);
-
-				}
+				case 1:
+					prosesOncelik1.add(temp);
+					it.remove();
+					break;
 				// Oncelik 2, kullanici proseslerinin geri beslemeli kuyruga eklenmesi.
-				else if (process.oncelik == 2) {
-					prosesOncelik2.add(process);
-					//prosesOncelik2.add(process)
-				}
+				case 2:
+					prosesOncelik2.add(temp);
+					it.remove();
+					break;
 				// Oncelik 3, kullanici proseslerinin round-robin kuyruguna eklenmesi.
-				else {
-					prosesOncelik3.add(process);
-
+				case 3:
+					prosesOncelik3.add(temp);
+					it.remove();
+					break;
 				}
 			}
 		}
 	}
 
-	// Gercek zamanli prosesler icin Ilk Gelen Ilk Calï¿½sï¿½r tipi siralayici fonksiyon
+	// Degistirilmesi cok muhtemel.
+	public void ZamanAsimiKontrol() {
+		int silinecekIndex = -1;
+
+		for (Process p : prosesOncelik1) {
+			if (programSayaci - p.baslamaZamani == 21 && p.dahaOnceCalistiMi) {
+				System.out.println(programSayaci + "sn proses zamanAsimi     id :" + p.pid + "oncelik: " + p.oncelik
+						+ "kalan süre: " + p.patlamaZamani);
+				silinecekIndex = (prosesOncelik1.indexOf(p));
+			}
+		}
+		if (silinecekIndex != -1) {
+			prosesOncelik1.remove(silinecekIndex);
+			silinecekIndex = -1;
+		}
+
+		for (Process p : prosesOncelik2) {
+			if (programSayaci - p.baslamaZamani == 21 && p.dahaOnceCalistiMi) {
+				System.out.println(programSayaci + "sn proses zamanAsimi     id :" + p.pid + "oncelik: " + p.oncelik
+						+ "kalan süre: " + p.patlamaZamani);
+				silinecekIndex = (prosesOncelik2.indexOf(p));
+			}
+		}
+		if (silinecekIndex != -1) {
+			prosesOncelik2.remove(silinecekIndex);
+			silinecekIndex = -1;
+		}
+
+		for (Process p : prosesOncelik3) {
+			if (programSayaci - p.baslamaZamani == 21 && p.dahaOnceCalistiMi) {
+				System.out.println(programSayaci + "sn proses zamanAsimi     id :" + p.pid + "oncelik: " + p.oncelik
+						+ "kalan süre: " + p.patlamaZamani);
+				silinecekIndex = (prosesOncelik3.indexOf(p));
+			}
+		}
+
+		if (silinecekIndex != -1) {
+			prosesOncelik3.remove(silinecekIndex);
+			silinecekIndex = -1;
+		}
+
+	}
+
+	// Gercek zamanli prosesler icin Ilk Gelen Ilk Calisir tipi siralayici
+	// fonksiyon
 	public void FCFS() {
+
+		// Yazdirma amaciyla tutulan proses, islem yapilmadan onceki halini tutuyor.
+		islemOncesiProses = new Process(gercekZamanli.get(0));
+
 		// Kuyrugun ilk elemani calistiriliyor.
 		gercekZamanli.get(0).Calistir();
-		islemProcess = new Process(gercekZamanli.get(0));
-		// Eger ilk elemanin kalan suresi 0 olursa proses tamamlaniyor.
-		if (gercekZamanli.get(0).processZamani == 0) {
 
+		// Yazdirma amaciyla tutulan proses, islem yapildiktan sonraki halini tutuyor.
+		islemSonrasiProses = new Process(gercekZamanli.get(0));
+
+		// Eger ilk elemanin kalan suresi 0 olursa proses tamamlaniyor.
+		if (gercekZamanli.get(0).patlamaZamani == 0) {
+
+			// Tamamlanan proses, listeden kaldiriliyor.
 			gercekZamanli.remove(0);
 		}
 	}
@@ -162,25 +204,44 @@ public class Gorevlendirici {
 	// fonksiyon
 	public void GeriBesleme() {
 
+		// 1. oncelikli proses listesinin bos olma durumu kontrol ediliyor.
+		// Eger bossa 2. oncelikli listede islem yapiliyor.
 		if (!(prosesOncelik1.isEmpty())) {
-			prosesOncelik1.get(0).Calistir();
-			islemProcess = new Process(prosesOncelik1.get(0));
-			if (prosesOncelik1.get(0).processZamani != 0) {
-				Process gecici = prosesOncelik1.remove(0);
-				gecici.oncelik++;
-				prosesOncelik2.add(gecici);
-				islemProcess.oncelik++;
 
+			// Yazdirma amaciyla tutulan proses, islem yapilmadan onceki halini tutuyor.
+			islemOncesiProses = new Process(prosesOncelik1.get(0));
+
+			// Kuyrugun ilk elemani calistiriliyor.
+			prosesOncelik1.get(0).Calistir();
+
+			// Yazdirma amaciyla tutulan proses, islem yapildiktan sonraki halini tutuyor.
+			islemSonrasiProses = new Process(prosesOncelik1.get(0));
+
+			// Prosesin onceligi dusurulmeden once bitme durumu kontrol ediliyor.
+			// Eger proses bitmediyse, onceligi dusurulup diger listeye atiliyor.
+			if (prosesOncelik1.get(0).patlamaZamani != 0) {
+
+				// Proses, oncelik listesinden cikariliyor.
+				Process gecici = prosesOncelik1.remove(0);
+
+				// Prosesin onceligi dusuruluyor.
+				gecici.oncelik++;
+
+				// Yazdirma amaciyla kopyalanan prosesin de onceligi dusuruluyor.
+				islemSonrasiProses.oncelik++;
+
+				// Proses, bir alt oncelikli listeye ekleniyor.
+				prosesOncelik2.add(gecici);
 			}
 
 			else {
 				prosesOncelik1.remove(0);
 			}
 
-		} else if (!(prosesOncelik2.isEmpty())) {
+		} else {
 			prosesOncelik2.get(0).Calistir();
-			islemProcess = new Process(prosesOncelik2.get(0));
-			if (prosesOncelik2.get(0).processZamani == 0) {
+			islemSonrasiProses = new Process(prosesOncelik2.get(0));
+			if (prosesOncelik2.get(0).patlamaZamani == 0) {
 				prosesOncelik2.remove(0);
 			} else {
 				Process gecici = prosesOncelik2.remove(0);
@@ -195,8 +256,8 @@ public class Gorevlendirici {
 	public void RoundRobin() {
 
 		prosesOncelik3.get(0).Calistir();
-		islemProcess = new Process(prosesOncelik3.get(0));
-		if (prosesOncelik3.get(0).processZamani == 0) {
+		islemSonrasiProses = new Process(prosesOncelik3.get(0));
+		if (prosesOncelik3.get(0).patlamaZamani == 0) {
 			prosesOncelik3.remove(0);
 		} else {
 			Process gecici = prosesOncelik3.remove(0);
@@ -209,59 +270,15 @@ public class Gorevlendirici {
 	public void Calis() {
 		// Programin kuyruklarda proses kalmayana kadar calismasi icin sonsuz dongu
 		// olusturuluyor.
-		
-		
-		Process geciciProcess = null;
-		Process mevcutProcess = null;
 
 		while (true) {
-			
-			for(int i=0;i<3;i++) {
-				int silinecekIndex=-1;
-				if(i==0) {
-					for(Process p:prosesOncelik1) {
-						if(programSayaci-p.baslamaZamani==21 && p.dahaOnceCalistiMi) {
-							System.out.println(programSayaci + "sn proses zamanAsimi     id :" + p.pid + "oncelik: " + p.oncelik + "kalan sÃ¼re: " + p.processZamani);
-							silinecekIndex=(prosesOncelik1.indexOf(p));
-						}
-					}
-					if(silinecekIndex!=-1) {
-						prosesOncelik1.remove(silinecekIndex);
-						silinecekIndex=-1;
-					}
-				}
-				else if(i==1) {
-					for(Process p:prosesOncelik2) {
-						if(programSayaci-p.baslamaZamani==21 && p.dahaOnceCalistiMi) {
-							System.out.println(programSayaci + "sn proses zamanAsimi     id :" + p.pid + "oncelik: " + p.oncelik + "kalan sÃ¼re: " + p.processZamani);
-							silinecekIndex=(prosesOncelik2.indexOf(p));
-						}
-					}
-					if(silinecekIndex!=-1) {
-						prosesOncelik2.remove(silinecekIndex);
-						silinecekIndex=-1;
-					}
-				}
-				else if(i==2) {
-					for(Process p:prosesOncelik3) {
-						if(programSayaci-p.baslamaZamani==21 && p.dahaOnceCalistiMi) {
-							System.out.println(programSayaci + "sn proses zamanAsimi     id :" + p.pid + "oncelik: " + p.oncelik + "kalan sÃ¼re: " + p.processZamani);
-							silinecekIndex=(prosesOncelik3.indexOf(p));
-						}
-					}
-					if(silinecekIndex!=-1) {
-						prosesOncelik3.remove(silinecekIndex);
-						silinecekIndex=-1;
-					}
-				}
-			}
+
 			// Program sayaci her arttiginda varis suresi dolmus bir proses varsa, gerekli
 			// kuyruga eklenmesi icin gerekli fonksiyon cagiriliyor.
 			// Bu fonksiyon cagirilirken, gecici liste icinde veri olup olmadigi kontrolu
 			// yapiliyor.
-			if (!(okunanProcessler.isEmpty())) {
+			if (!(okunanProsesler.isEmpty())) {
 				KuyrugaEkle();
-				// System.out.println("denme1");
 			}
 
 			// Gercek zamanli proses listesi bos degilse FCFS siralayici kullaniliyor.
@@ -271,7 +288,6 @@ public class Gorevlendirici {
 					gercekZamanli.get(0).baslamaZamani = programSayaci;
 					gercekZamanli.get(0).dahaOnceCalistiMi = true;
 				}
-				mevcutProcess = new Process(gercekZamanli.get(0));
 
 				FCFS();
 			}
@@ -280,12 +296,11 @@ public class Gorevlendirici {
 			// Kuyruk bos degilse Geri Beslemeli siralayici kullaniliyor.
 			else if (!(prosesOncelik1.isEmpty())) {
 
-
 				if (!prosesOncelik1.get(0).dahaOnceCalistiMi) {
 					prosesOncelik1.get(0).baslamaZamani = programSayaci;
 					prosesOncelik1.get(0).dahaOnceCalistiMi = true;
 				}
-				mevcutProcess = new Process(prosesOncelik1.get(0));
+				islemOncesiProses = new Process(prosesOncelik1.get(0));
 				GeriBesleme();
 
 			}
@@ -297,10 +312,7 @@ public class Gorevlendirici {
 					prosesOncelik2.get(0).baslamaZamani = programSayaci;
 					prosesOncelik2.get(0).dahaOnceCalistiMi = true;
 				}
-				mevcutProcess = new Process(prosesOncelik2.get(0));
 				GeriBesleme();
-				// System.out.println("denme4");
-
 			}
 
 			// 2. oncelik kuyrugu bossa 3. oncelikli prosesler kontrol ediliyor.
@@ -310,7 +322,7 @@ public class Gorevlendirici {
 					prosesOncelik3.get(0).baslamaZamani = programSayaci;
 					prosesOncelik3.get(0).dahaOnceCalistiMi = true;
 				}
-				mevcutProcess = new Process(prosesOncelik3.get(0));
+				islemOncesiProses = new Process(prosesOncelik3.get(0));
 				RoundRobin();
 
 			}
@@ -322,43 +334,53 @@ public class Gorevlendirici {
 				System.out.println("Program sonlandi.");
 				break;
 			}
+			ZamanAsimiKontrol();
+			Yazdir();
 
-//			System.out.println("YAZDIR");
-
-			if (mevcutProcess != null && geciciProcess == null) {
-				System.out.println(programSayaci + ".0000 sn proses basladi     id : " + mevcutProcess.pid + " oncelik: "
-						+ mevcutProcess.oncelik + " kalan sure : " + mevcutProcess.processZamani);
-
-			} else if (geciciProcess.pid == mevcutProcess.pid) {
-				System.out.println(programSayaci + ".0000 sn proses yurutuluyor       id : " + mevcutProcess.pid
-						+ " oncelik: " + mevcutProcess.oncelik + " kalan sure : " + mevcutProcess.processZamani);
-
-			}
-
-			else if (geciciProcess.pid != mevcutProcess.pid) {
-				if (geciciProcess.processZamani == 0) {
-					System.out.println(programSayaci + ".0000 sn proses sonlandi        id : " + geciciProcess.pid
-							+ " oncelik: " + geciciProcess.oncelik + " kalan sure : " + geciciProcess.processZamani);
-
-					System.out.println(programSayaci + ".0000 sn proses basladi        id : " + mevcutProcess.pid
-							+ " oncelik: " + mevcutProcess.oncelik + " kalan sure : " + mevcutProcess.processZamani);
-
-				} else if (geciciProcess.processZamani != 0) {
-
-					System.out.println(programSayaci + ".0000 sn proses askida        id : " + geciciProcess.pid
-							+ " oncelik: " + geciciProcess.oncelik + " kalan sure : " + geciciProcess.processZamani);
-
-					System.out.println(programSayaci + ".0000 sn proses basladi        id : " + mevcutProcess.pid
-							+ " oncelik: " + mevcutProcess.oncelik + " kalan sure : " + mevcutProcess.processZamani);
-
-				}
-
-			} else
-				System.out.println("sictin");
-
-			geciciProcess = new Process(islemProcess);
+			oncekiProses = new Process(islemSonrasiProses);
 
 			programSayaci++;
 		}
+	}
+
+	public void Yazdir() {
+
+		if (islemOncesiProses != null && oncekiProses == null) { // sadece ilk prosesin yazdýrýlmasýnda kullanýlýr.
+																	// Gecici
+																	// prosese daha atama yapýlmadýgý icin kosul dogru
+																	// calismakta
+			System.out.println(programSayaci + ".0000 sn proses baþladý     id : " + islemOncesiProses.pid
+					+ " oncelik: " + islemOncesiProses.oncelik + " kalan sure : " + islemOncesiProses.patlamaZamani);
+
+		} else if (oncekiProses.pid == islemOncesiProses.pid)// gecici(onceki) proses ve simdiki proses ayniysa sonlanma
+																// veya kesilme olmamis demektir
+		{
+			System.out.println(programSayaci + ".0000 sn proses yürütülüyor       id : " + islemOncesiProses.pid
+					+ " oncelik: " + islemOncesiProses.oncelik + " kalan sure : " + islemOncesiProses.patlamaZamani);
+
+		}
+
+		else if (oncekiProses.pid != islemOncesiProses.pid) { // sonlanma veya kesilme durumu mevcut
+			if (oncekiProses.patlamaZamani == 0) { // sonlanma durumu
+				System.out.println(programSayaci + ".0000 sn proses sonlandi        id : " + oncekiProses.pid
+						+ " oncelik: " + oncekiProses.oncelik + " kalan sure : " + oncekiProses.patlamaZamani);
+
+				System.out.println(
+						programSayaci + ".0000 sn proses basladi        id : " + islemOncesiProses.pid + " oncelik: "
+								+ islemOncesiProses.oncelik + " kalan sure : " + islemOncesiProses.patlamaZamani);
+
+			} else if (oncekiProses.patlamaZamani != 0) {// kesilme durumu
+
+				System.out.println(programSayaci + ".0000 sn proses askida        id : " + oncekiProses.pid
+						+ " oncelik: " + oncekiProses.oncelik + " kalan sure : " + oncekiProses.patlamaZamani);
+
+				System.out.println(
+						programSayaci + ".0000 sn proses basladi        id : " + islemOncesiProses.pid + " oncelik: "
+								+ islemOncesiProses.oncelik + " kalan sure : " + islemOncesiProses.patlamaZamani);
+
+			}
+
+		} else
+			System.out.println("sictin");
 	}
 }
