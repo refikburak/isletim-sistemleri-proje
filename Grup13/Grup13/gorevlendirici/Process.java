@@ -7,17 +7,19 @@ public class Process {
 	int varisZamani;
 	int oncelik;
 	int patlamaZamani;
+	String renkKodu;
 
 	// Kontroller icin gerekli propertyler
 	int baslamaZamani;
 	boolean dahaOnceCalistiMi = false;
 
 	// Dosyadan okunan prosesler icin parametrelerin alindigi kurucu fonksiyon.
-	public Process(String pid, int varisZamani, int oncelik, int patlamaZamani) {
+	public Process(String pid, int varisZamani, int oncelik, int patlamaZamani, String renkKodu) {
 		this.pid = pid;
 		this.oncelik = oncelik;
 		this.patlamaZamani = patlamaZamani;
 		this.varisZamani = varisZamani;
+		this.renkKodu = renkKodu;
 	}
 
 	// Kontroller icin kullanilan prosesleri kopyalayabilmek icin kullanilan kurucu
@@ -29,6 +31,7 @@ public class Process {
 		this.varisZamani = p.varisZamani;
 		this.dahaOnceCalistiMi = p.dahaOnceCalistiMi;
 		this.baslamaZamani = p.baslamaZamani;
+		this.renkKodu = p.renkKodu;
 	}
 
 	// Prosesin patlama zamanini azaltan yani bir cycle calistiran fonksiyon.
