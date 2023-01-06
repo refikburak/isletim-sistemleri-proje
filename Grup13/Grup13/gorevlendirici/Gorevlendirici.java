@@ -322,8 +322,8 @@ public class Gorevlendirici {
 
 				// Bu fonksiyon cagirilirken, gecici liste icinde veri olup olmadigi kontrolu yapiliyor.
 				KuyrugaEkle();
+			
 			}
-
 			// Gercek zamanli proses listesi bos degilse FCFS siralayici kullaniliyor.
 			if (!(gercekZamanli.isEmpty())) {
 
@@ -369,24 +369,37 @@ public class Gorevlendirici {
 				RoundRobin();
 
 			}
+			
+			//20 saniye kontrolu ile prosesin sonlanip sonlanmayacagi durumu saglaniliyor.
+			ZamanAsimiKontrol();
+			
+			//Prosesin anlik durumu yazdiriliyor.
+			Yazdir();
 
 			// Eger 3. oncelik kuyrugu da bossa, tum kuyruklar kontrol edilmis oldugu icin
 			// kuyrukta proses kalmamis oluyor. Bu sartlarda da program sonlaniyor ve sonsuz dongu bitiriliyor.
-			else if (okunanProsesler.isEmpty()) {
+			if (okunanProsesler.isEmpty()&&gercekZamanli.isEmpty()&&prosesOncelik1.isEmpty()&&prosesOncelik2.isEmpty()&&prosesOncelik3.isEmpty()) {
+				 //programSayaci
 				System.out.println("Program sonlandi.");
 				break;
 			}
+			
 
-			//20 saniye kontrolu ile prosesin sonlanip sonlanmayacagi durumu saglaniliyor.
-			ZamanAsimiKontrol();
-			//Prosesin anlik durumu yazdiriliyor.
-			Yazdir();
 			
 			//Onceki processe atama saglanarak son islem yapilan process elde tutuluypr.
 			oncekiProses = new Process(islemSonrasiProses);
 			//Saniye(program sayaci) arttiriliyor.
 			programSayaci++;
+			
+			/*if (okunanProsesler.isEmpty()&&gercekZamanli.isEmpty()&&prosesOncelik1.isEmpty()&&prosesOncelik2.isEmpty()&&prosesOncelik3.isEmpty()) {
+				 programSayaci++;
+				//Yazdir();
+				System.out.println("Program sonlandi.");
+				break;
+			}*/
 		}
+		
+		
 	}
 	//Istenilen bicimde output icin yazdirma islemi yapiliyor.
 	public void Yazdir() {
@@ -399,11 +412,12 @@ public class Gorevlendirici {
 			System.out.println(islemOncesiProses.renkKodu+" "+programSayaci + ".0000 sn proses başladı     id : " + islemOncesiProses.pid
 					+ " öncelik: " + islemOncesiProses.oncelik + " kalan süre : " + islemOncesiProses.patlamaZamani + ANSI_RESET);
 
-		} else if (oncekiProses.pid == islemOncesiProses.pid)// gecici(onceki) proses ve simdiki proses ayniysa sonlanma
+		} else if (oncekiProses.pid == islemOncesiProses.pid && oncekiProses.patlamaZamani == islemOncesiProses.patlamaZamani )// gecici(onceki) proses ve simdiki proses ayniysa sonlanma
 																// veya kesilme olmamis demektir
 		{
 			System.out.println(islemOncesiProses.renkKodu+" "+programSayaci + ".0000 sn proses yürütülüyor       id : " + islemOncesiProses.pid
 					+ " öncelik: " + islemOncesiProses.oncelik + " kalan süre : " + islemOncesiProses.patlamaZamani + ANSI_RESET);
+
 
 		}
 
@@ -427,7 +441,10 @@ public class Gorevlendirici {
 
 			}
 
-		} else
-			System.out.println("Sistem Hatasi");
+		} 	if (okunanProsesler.isEmpty()&&gercekZamanli.isEmpty()&&prosesOncelik1.isEmpty()&&prosesOncelik2.isEmpty()&&prosesOncelik3.isEmpty()) {  //son kosul
+			System.out.println(islemSonrasiProses.renkKodu+" "+(programSayaci + 1) + ".0000 sn proses sonlandı        id : " + islemSonrasiProses.pid
+					+ " öncelik: " + islemSonrasiProses.oncelik + " kalan süre : " + islemSonrasiProses.patlamaZamani + ANSI_RESET);
+			
+		}
 	}
 }
