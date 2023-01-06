@@ -428,6 +428,6 @@ public class Gorevlendirici {
 			}
 
 		} else
-			System.out.println("sictin");
+			System.out.println("Sistem Hatasi");
 	}
 }
