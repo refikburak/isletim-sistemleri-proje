@@ -1,0 +1,1 @@
+Class klasörlerinin dışındaki Grup13.jar isimli dosya ödevimizdir. Bu jar cmd'de txt uzantılı dosya parametre verilerek çalıştırılmalıdır.
