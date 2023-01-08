@@ -142,7 +142,7 @@ public class Gorevlendirici {
 		// yapilabilmesi
 		int silinecekIndex = -1;
 
-		// 1. oncelikli kuyrugun tum elemanlarý kontrol ediliyor.
+		// 1. oncelikli kuyrugun tum elemanlarï¿½ kontrol ediliyor.
 		for (Process p : prosesOncelik1) {
 
 			// Eger proses, daha once calismissa ve prosesin calismasindan itibaren 20
@@ -170,7 +170,7 @@ public class Gorevlendirici {
 			silinecekIndex = -1;
 		}
 
-		// 2. oncelikli kuyrugun tum elemanlarý kontrol ediliyor.
+		// 2. oncelikli kuyrugun tum elemanlarï¿½ kontrol ediliyor.
 		for (Process p : prosesOncelik2) {
 
 			// Eger proses, daha once calismissa ve prosesin calismasindan itibaren 20
@@ -198,7 +198,7 @@ public class Gorevlendirici {
 			silinecekIndex = -1;
 		}
 
-		// 3. oncelikli kuyrugun tum elemanlarý kontrol ediliyor.
+		// 3. oncelikli kuyrugun tum elemanlarï¿½ kontrol ediliyor.
 		for (Process p : prosesOncelik3) {
 
 			// Eger proses, daha once calismissa ve prosesin calismasindan itibaren 20
@@ -409,7 +409,6 @@ public class Gorevlendirici {
 
 				islemOncesiProses = new Process(prosesOncelik1.get(0));
 				GeriBesleme();
-
 			}
 
 			// 1. oncelik kuyrugu bossa 1. oncelikli prosesler kontrol ediliyor.
@@ -436,7 +435,6 @@ public class Gorevlendirici {
 
 				islemOncesiProses = new Process(prosesOncelik3.get(0));
 				RoundRobin();
-
 			}
 
 			// 20 saniye kontrolu ile prosesin sonlanip sonlanmayacagi durumu saglaniliyor.
@@ -454,21 +452,21 @@ public class Gorevlendirici {
 				System.out.println("Program sonlandi.");
 				break;
 			}
-
-			// Onceki processe atama saglanarak son islem yapilan process elde tutuluypr.
-			oncekiProses = new Process(islemSonrasiProses);
-
+			// Ä°slem yapilmis prosesimiz var ise onceki processe atama saglanarak son islem
+			// yapilan process, elde tutuluypr.
+			if (islemSonrasiProses != null) {
+				oncekiProses = new Process(islemSonrasiProses);
+			}
 			// Saniye(program sayaci) arttiriliyor.
 			programSayaci++;
 
 		}
-
 	}
-
 	// Istenilen bicimde output icin yazdirma islemi yapiliyor.
+
 	public void Yazdir() throws Exception {
 
-		// Yazdirmaya yardimci olacak degiskenlerin atamalarý eger yapilmadiysa, yani
+		// Yazdirmaya yardimci olacak degiskenlerin atamalarïi eger yapilmadiysa, yani
 		// null'larsa, yani daha once bi islem yapilmadiysa, ilk proses baslamis oluyor.
 		if (islemOncesiProses != null && oncekiProses == null) {
 
@@ -478,7 +476,6 @@ public class Gorevlendirici {
 							islemOncesiProses.renkKodu, String.valueOf(programSayaci), islemOncesiProses.pid,
 							String.valueOf(islemOncesiProses.oncelik), String.valueOf(islemOncesiProses.patlamaZamani),
 							ANSI_RESET));
-
 		}
 
 		// Program cycle'inda eger onceki islem gormus proses ve islem gorecek olan
@@ -554,5 +551,6 @@ public class Gorevlendirici {
 							String.valueOf(islemSonrasiProses.patlamaZamani), ANSI_RESET));
 
 		}
+
 	}
 }
