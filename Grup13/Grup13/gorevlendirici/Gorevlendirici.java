@@ -20,6 +20,9 @@ public class Gorevlendirici {
 	// Dosya okuma icin scanner sinifi
 	Scanner scanner;
 
+	// Parametre olarak alinacak dosya
+	String dosya;
+
 	// Program ilerlemesini tutmak ve yonetmek icin program sayaci
 	int programSayaci;
 
@@ -41,7 +44,6 @@ public class Gorevlendirici {
 	// Sinifta kullanilacak fonksiyonlarin gerceklenmesi kurucu fonksiyonda
 	// yapiliyor.
 	public Gorevlendirici(String dosya) throws FileNotFoundException {
-		// TODO ornek.txt "dosya" parametresiyle degistirilecek.
 
 		// Program sayaci icin deger atamasi yapiliyor.
 		programSayaci = 0;
@@ -52,12 +54,15 @@ public class Gorevlendirici {
 		prosesOncelik1 = new ArrayList<Process>();
 		prosesOncelik2 = new ArrayList<Process>();
 		prosesOncelik3 = new ArrayList<Process>();
+
+		// Dosya adi atamasi yapiliyor.
+		this.dosya = dosya;
 	}
 
 	// Dosyadan okuma yapan ve gecici listeye atan fonksiyon
 	public void Oku() throws FileNotFoundException {
 
-		scanner = new Scanner(new File("ornek.txt"));
+		scanner = new Scanner(new File(dosya));
 
 		// Renk kodlari icin liste tanimlaniyor.
 		String[] renkKodlari = new String[] { "\u001B[31m", "\u001B[32m", "\u001B[33m", "\u001B[34m", "\u001B[35m",
@@ -392,7 +397,6 @@ public class Gorevlendirici {
 					// Eger proses baslamadiysa, baslama zamani program sayacina esitleniyor.
 					gercekZamanli.get(0).baslamaZamani = programSayaci;
 				}
-				islemOncesiProses = new Process(gercekZamanli.get(0));
 				FCFS();
 			}
 
@@ -407,7 +411,6 @@ public class Gorevlendirici {
 					prosesOncelik1.get(0).baslamaZamani = programSayaci;
 				}
 
-				islemOncesiProses = new Process(prosesOncelik1.get(0));
 				GeriBesleme();
 			}
 
@@ -421,7 +424,6 @@ public class Gorevlendirici {
 					// Eger proses baslamadiysa, baslama zamani program sayacina esitleniyor.
 					prosesOncelik2.get(0).baslamaZamani = programSayaci;
 				}
-				islemOncesiProses = new Process(prosesOncelik2.get(0));
 				GeriBesleme();
 			}
 
@@ -430,10 +432,12 @@ public class Gorevlendirici {
 			else if (!(prosesOncelik3.isEmpty())) {
 
 				// Prosesin daha once calisma kontrolu yapiliyor.
-				if (!prosesOncelik3.get(0).dahaOnceCalistiMi)
-					prosesOncelik3.get(0).baslamaZamani = programSayaci;
+				if (!prosesOncelik3.get(0).dahaOnceCalistiMi) {
 
-				islemOncesiProses = new Process(prosesOncelik3.get(0));
+					// Eger proses baslamadiysa, baslama zamani program sayacina esitleniyor.
+					prosesOncelik3.get(0).baslamaZamani = programSayaci;
+				}
+
 				RoundRobin();
 			}
 
@@ -452,7 +456,7 @@ public class Gorevlendirici {
 				System.out.println("Program sonlandi.");
 				break;
 			}
-			// Ä°slem yapilmis prosesimiz var ise onceki processe atama saglanarak son islem
+			// Islem yapilmis prosesimiz var ise onceki processe atama saglanarak son islem
 			// yapilan process, elde tutuluypr.
 			if (islemSonrasiProses != null) {
 				oncekiProses = new Process(islemSonrasiProses);
@@ -462,20 +466,23 @@ public class Gorevlendirici {
 
 		}
 	}
-	// Istenilen bicimde output icin yazdirma islemi yapiliyor.
 
+	// Istenilen bicimde output icin yazdirma islemi yapiliyor.
 	public void Yazdir() throws Exception {
 
-		// Yazdirmaya yardimci olacak degiskenlerin atamalarïi eger yapilmadiysa, yani
-		// null'larsa, yani daha once bi islem yapilmadiysa, ilk proses baslamis oluyor.
-		if (islemOncesiProses != null && oncekiProses == null) {
+		// Onceki islem yapilan proses bossa ilk proses budur.
+		if (oncekiProses == null) {
 
-			// Ilk prosesin yazdirilmasi
-			System.out.println(
-					String.format("%s%s.0000 sn proses basladi     id : %s     oncelik : %s    kalan sure : %s%s",
-							islemOncesiProses.renkKodu, String.valueOf(programSayaci), islemOncesiProses.pid,
-							String.valueOf(islemOncesiProses.oncelik), String.valueOf(islemOncesiProses.patlamaZamani),
-							ANSI_RESET));
+			// Islem yapilacak proses bos degilse ilk proses baslangic mesaji yazdirilir.
+			if (islemOncesiProses != null) {
+
+				// Ilk prosesin yazdirilmasi
+				System.out.println(
+						String.format("%s%s.0000 sn proses basladi     id : %s     oncelik : %s    kalan sure : %s%s",
+								islemOncesiProses.renkKodu, String.valueOf(programSayaci), islemOncesiProses.pid,
+								String.valueOf(islemOncesiProses.oncelik),
+								String.valueOf(islemOncesiProses.patlamaZamani), ANSI_RESET));
+			}
 		}
 
 		// Program cycle'inda eger onceki islem gormus proses ve islem gorecek olan
