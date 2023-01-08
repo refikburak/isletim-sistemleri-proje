@@ -1,10 +1,8 @@
 package gorevlendirici;
 
-import java.io.IOException;
-
 public class Main {
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws Exception {
 		Gorevlendirici gorevlendirici = new Gorevlendirici("ornek.txt");
 		gorevlendirici.Oku();
 		gorevlendirici.Calis();
